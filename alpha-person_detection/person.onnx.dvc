@@ -1,0 +1,4 @@
+outs:
+- md5: 2e19c0119309b45204f66e9701093f5c
+  size: 3710223
+  path: person.onnx

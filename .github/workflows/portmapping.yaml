@@ -1,0 +1,56 @@
+name: Portmapping
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test_setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: checking the folders which are new
+        id: check_files
+        run: |
+          echo "=============== list of modified files ==============="
+          git diff --dirstat=files,0 HEAD~1 | sed 's/^[ 0-9.]\+% //g'
+          echo "======================================================"
+          git diff --dirstat=files,0 HEAD~1 | sed 's/^[ 0-9.]\+% //g' > files.txt
+          while IFS= read -r file
+          do
+            echo $file
+            if [[ $file == alpha-* ]]; then
+              echo $file | sed "s#\(.*\)/\$#\1#" >> project-names.txt;
+            else
+              echo  "no projects started with alpha"
+            fi            
+          done < files.txt
+          cat project-names.txt
+      - name: deploy to server
+        uses: AEnterprise/rsync-deploy@v1.0
+        env:
+          DEPLOY_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-e -c -r --delete"
+          SERVER_PORT: 22
+          FOLDER: project-names.txt
+          SERVER_IP: ${{ secrets.REMOTE_HOST }}
+          USERNAME: ${{ secrets.REMOTE_USER }}
+          SERVER_DESTINATION: /home/ubuntu/Ai-project/Ai-script-for-mapping
+      
+      - name: run python script in the server
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: |
+            cd /home/ubuntu/Ai-project/ats
+            git pull https://adityasharma369:${{ secrets.PAT }}@github.com/tericsoft-product/ats.git
+            cd /home/ubuntu/Ai-project/Ai-script-for-mapping
+            python validator.py
+            sudo python subdomain.py
+            sudo service apache2 graceful
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          privateKey: ${{ secrets.SERVER_SSH_KEY}}

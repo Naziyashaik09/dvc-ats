@@ -1,0 +1,5 @@
+alphaui
+Jinja2==3.0.3
+tensorflow==2.3.0
+opencv-python==4.5.5.64
+matplotlib==3.5.1

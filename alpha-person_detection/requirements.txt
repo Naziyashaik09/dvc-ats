@@ -1,0 +1,8 @@
+opencv-python-headless==4.5.3.56
+mxnet
+Cython
+alphaui
+jinja2
+onnxruntime==1.10.0
+onnx==1.11.0
+insightface==0.6.2

@@ -1,0 +1,10 @@
+*.pyc
+*.so
+*.csv
+*alpha-person_detection/outputs/*
+.vscode/configurationCache.log
+.vscode/dryrun.log
+.vscode/targets.log
+*alpha-de_oldify/output/*
+*.db
+*gradio_queue.db
